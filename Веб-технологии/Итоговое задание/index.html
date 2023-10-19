@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<!-- 1. Создать форму регистрации участников конференции: (10 баллов)
+
+Имя (должны быть указаны полностью фамилия, имя и отчество), 
+контактный телефон,
+адрес электронной почты, 
+список с секциями конференции (математика, физика, информатика)
+дата рождения
+доклад (переключатель), 
+если есть доклад – то отображается поле для ввода темы. -->
+<body>
+    <div id="form_reg_participant">
+        <form class="guruweba_example_form" name="feedback" method="POST" action="/feedback.php">
+            <div style="text-align: center; font-weight: bold;"> Форма регистрации участников конференции</div>
+            <div>Имя</div>
+            <input type="text" name="first_name" required="required">
+            <div>Фамилия</div>
+            <input type="text" name="last_name" required="required">
+            <div>Отчество</div>
+            <input type="text" name="middle_name" required="required">
+            <div>Контактный телефон</div>
+            <input type="text" name="phone" required="required">
+            <div>Ваш email</div>
+            <input type="email" name="email" required="required">
+            <div>Дата рождения</div>
+            <input type="date" name="birth_date">
+            <div>Список с секциями конференции</div>
+            <select name="theme" required="required">
+                <option value="math">Математика</option>
+                <option value="fiz">Физика</option>
+                <option value="inf">информатика</option>
+              </select>
+            <div>Доклад? <input type="checkbox" name="report"></div>
+            <div id="report_enter_info" style="display: none;">Введите тему доклада:
+                <input type="text" name="report_theme"></div>
+            <section>
+            </section>
+            <input type="submit" name="submit_btn" value="Отправить">
+          </form>
+    </div>
+</body>
+</html>
+
+<script>
+var checkbox = document.getElementsByName("report");
+var div_report_enter_info = document.getElementById("report_enter_info");
+
+checkbox[0].addEventListener('change', function() {
+  if (this.checked) {
+    div_report_enter_info.style.display="block";
+  } else {
+    div_report_enter_info.style.display="none";
+  }
+});
+
+
+//2. Добавьте валидацию формы. (20 баллов)
+//все поля, кроме даты рождения, обязательны для заполнения;
+//поля имя, фамилия, отчество содержат только буквы русского алфавита;
+///^[a-zA-Zа-яА-ЯЁё ]+$/
+//поле телефон содержит только цифры, длина 11 символов, первые два символа +7
+///^[\s()+-]*([0-9][\s()+-]*){6,20}$/
+//корректность адреса электронной почты;
+var isNotValid = function(s) {
+    if (/[a-zA-Z ]/.test(s)){
+        return true
+    }else{
+        return false
+    };
+};
+
+var isNotValidPhone = function(s) {
+    if (/^[\s()+-]*([0-9][\s()+-]*){6,20}$/.test(s)){
+        return false
+    }else{
+        return true
+    };
+};
+
+var isNotValidEmail = function(s) {
+    if (/^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/.test(s)){
+        return false
+    }else{
+        return true
+    };
+};
+
+var first_name = document.getElementsByName('first_name')[0]
+var last_name = document.getElementsByName('last_name')[0]
+var middle_name = document.getElementsByName('middle_name')[0]
+var full_name = [first_name, last_name, middle_name]
+
+first_name.addEventListener('input', function() {
+        if(isNotValid(this.value)){
+            this.style.backgroundColor='#E9967A';
+        }else{
+            this.style.backgroundColor='white'
+        };
+    });
+
+last_name.addEventListener('input', function() {
+    if(isNotValid(this.value)){
+            this.style.backgroundColor='#E9967A';
+        }else{
+            this.style.backgroundColor='white'
+        };
+    });
+
+middle_name.addEventListener('input', function() {
+    if(isNotValid(this.value)){
+            this.style.backgroundColor='#E9967A';
+        }else{
+            this.style.backgroundColor='white'
+        };
+    });
+
+
+var phone = document.getElementsByName('phone')[0]
+phone.addEventListener('input', function() {
+    
+    if(isNotValidPhone(this.value)){
+            this.style.backgroundColor='#E9967A';
+        }else{
+            this.style.backgroundColor='white';
+        };
+    });
+
+var email = document.getElementsByName('email')[0]
+email.addEventListener('input', function() {
+    
+    if(isNotValidEmail(this.value)){
+            this.style.backgroundColor='#E9967A';
+        }else{
+            this.style.backgroundColor='white';
+        };
+    });
+
+
+
+</script>
+<!--3. Оформление формы регистрации. (20 баллов)-->
+<style>
+div {
+    background-color: white;
+    height: 5%;
+    width: 50%;
+}
+input {
+    background-color: white;
+    height: 5%;
+    width: 50%;
+    border-radius: 10%;
+    border-color: beige;
+}
+
+</style>
+
+<!--4. После заполнения всех полей и нажатия на кнопку "отправить" формируется страница, содержащая все ответы пользователя.(20 баллов + 20 баллов за оформление)-->
+
+<!--5. Данные из формы сохранить в БД. (20 баллов)-->
+
+<!--6. Выведите список зарегистрированных участников в виде таблицы.(20 баллов + 20 баллов за оформление)-->
