@@ -17,6 +17,7 @@
 если есть доклад – то отображается поле для ввода темы. -->
 <body>
     {% csrf_token %}
+    <div id="divpersons"></div>
     <div id="form_reg_participant">
         <form name="feedback" onsubmit="false" >
             <div style="text-align: center; font-weight: bold;"> Форма регистрации участников конференции</div>
@@ -43,7 +44,7 @@
                 <input type="text" name="report_theme"></div>
             <section>
             </section>
-            <input type="button" name="submit_btn" value="Отправить">
+            <input type="submit" name="submit_btn" value="Отправить">
           </form>
     </div>
 </body>
@@ -161,6 +162,12 @@ input {
     border-color: beige;
 }
 
+div#divpersons{
+    margin-left: auto; 
+    margin-right: 0;
+    height: 5%;
+    width: 50%;
+ }
 
 </style>
 
@@ -251,14 +258,23 @@ input_form_send.addEventListener('click', function() {
 <script>
     var ShowPerosnInfo = function(){
         var csrftoken = csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
-        var response = (fetch('http://127.0.0.1:8000/reg_per/list', {
-            'method': 'POST',
-            'headers': {
-            'Content-Type': 'application/json; charset=utf-8',
-            'X-CSRFToken': csrftoken
-            },
-            'body': {}
-        }));
+        var xhr = new XMLHttpRequest();
+        xhr.open("POST", 'http://127.0.0.1:8000/reg_per/list', false);
+        xhr.setRequestHeader('Content-Type', 'application/json');
+        xhr.setRequestHeader('X-CSRFToken', csrftoken);
+        xhr.send();
+        response = xhr.responseText
+        response = JSON.parse(response)
+        persons = JSON.parse(response['list'])
+        var place_per = document.getElementById('divpersons')
+        for(x=0;x<persons.length; x++){
+            p = persons[x]
+            var div = document.createElement('div');
+            div.setAttribute('id','persons');
+            div.setAttribute ('style','background-color :green;');
+            div.innerHTML = p.pk + " " + p.fields.first_name + " " + p.fields.last_name + " " + p.fields.middle_name + " " + p.fields.birth_date + " " + p.fields.phone + " " + p.fields.email + " " + p.fields.report_theme
+            place_per.appendChild(div)
+        }
 
         // Выводим ответ сервера в консоли:
 
