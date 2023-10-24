@@ -2,9 +2,9 @@
 
 ! Проект на DJANGO. 
 
-1. активировать виртуальное окружение, которое лежит в webt/bin/activat 
+1. активировать виртуальное окружение, которое лежит в webt/bin/activate
 ```bash
-source webt/bin/activat
+source webt/bin/activate
 #перейти в директорию проекта cd *путь на вашей машине*/wb
 pip install -r requirements.txt
 ```
