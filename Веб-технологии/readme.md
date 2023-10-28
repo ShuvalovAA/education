@@ -1,6 +1,6 @@
 # Start
 
-! Проект на DJANGO. 
+! Проект на DJANGO(python 3.10. 
 
 1. активировать виртуальное окружение, которое лежит в webt/bin/activate
 ```bash
