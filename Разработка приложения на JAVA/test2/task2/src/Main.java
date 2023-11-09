@@ -1,18 +1,14 @@
-import javax.swing.JFrame;
 public class Main {
+
     public static void main(String[] args) {
 
+        //prepare
+        Fixture.generateFixtures();
 
-        class UserFrame extends JFrame{
 
-            public UserFrame(){
 
-                setSize(500, 300);
+        MyFrame myFrame = new MyFrame();
+        myFrame.setVisible(true);
 
-                setDefaultCloseOperation(EXIT_ON_CLOSE);
-
-            }
-
-        }
-        }
     }
+}
