@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
+    <link rel="stylesheet" href="/resources/demos/style.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.js"></script>
+    <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script>
+</head>
+
+<!-- 1. Создать форму регистрации участников конференции: (10 баллов)
+
+Имя (должны быть указаны полностью фамилия, имя и отчество), 
+контактный телефон,
+адрес электронной почты, 
+список с секциями конференции (математика, физика, информатика)
+дата рождения
+доклад (переключатель), 
+если есть доклад – то отображается поле для ввода темы. -->
+<body>
+    {% csrf_token %}
+    
+    <div id="form_reg_participant">
+        <div id="feedback">
+        <form name="feedback" onSubmit="return false">
+            <div style="text-align: center; font-weight: bold;"> Форма регистрации участников конференции</div>
+            <div>Имя</div>
+            <input type="text" name="first_name" required="required">
+            <div>Фамилия</div>
+            <input type="text" name="last_name" required="required">
+            <div>Отчество</div>
+            <input type="text" name="middle_name" required="required">
+            <div>Контактный телефон</div>
+            <input type="phone" name="phone" required="required">
+            <div>Ваш email</div>
+            <input type="email" name="email" required="required">
+            <div>Дата рождения</div>
+            <input type="date" name="birth_date" required="required">
+            <div>Список с секциями конференции</div>
+            <select name="theme" required="required">
+                <option value="math">Математика</option>
+                <option value="fiz">Физика</option>
+                <option value="inf">информатика</option>
+              </select>
+            <div>Доклад? <input type="checkbox" name="report"></div>
+            <div id="report_enter_info" style="display: none;">Введите тему доклада:
+                <input type="text" name="report_theme"></div>
+            <section>
+            </section>
+            <input type="submit" name="submit_btn" value="Отправить">
+          </form>
+        </div>
+    </div>
+    <div id="divpersons"></div>
+    <div id="popup" style="display: none;"></div>
+</body>
+</html>
+
+<script>
+var checkbox = document.getElementsByName("report");
+var div_report_enter_info = document.getElementById("report_enter_info");
+
+checkbox[0].addEventListener('change', function() {
+  if (this.checked) {
+    div_report_enter_info.style.display="block";
+  } else {
+    div_report_enter_info.style.display="none";
+  }
+});
+
+
+//2. Добавьте валидацию формы. (20 баллов)
+//все поля, кроме даты рождения, обязательны для заполнения;
+//поля имя, фамилия, отчество содержат только буквы русского алфавита;
+///^[a-zA-Zа-яА-ЯЁё ]+$/
+//поле телефон содержит только цифры, длина 11 символов, первые два символа +7
+///^[\s()+-]*([0-9][\s()+-]*){6,20}$/
+//корректность адреса электронной почты;
+var isNotValid = function(s) {
+    if (/[a-zA-Z ]/.test(s)){
+        return true
+    }else{
+        return false
+    };
+};
+
+var isNotValidPhone = function(s) {
+    if (/^[\s()+-]*([0-9][\s()+-]*){6,20}$/.test(s)){
+        return false
+    }else{
+        return true
+    };
+};
+
+var isNotValidEmail = function(s) {
+    if (/^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/.test(s)){
+        return false
+    }else{
+        return true
+    };
+};
+var birth_date = document.getElementsByName('birth_date')[0]
+var first_name = document.getElementsByName('first_name')[0]
+var last_name = document.getElementsByName('last_name')[0]
+var middle_name = document.getElementsByName('middle_name')[0]
+var full_name = [first_name, last_name, middle_name]
+
+first_name.addEventListener('input', function() {
+        if(isNotValid(this.value)){
+            this.style.backgroundColor='#E9967A';
+        }else{
+            this.style.backgroundColor='white'
+        };
+    });
+
+last_name.addEventListener('input', function() {
+    if(isNotValid(this.value)){
+            this.style.backgroundColor='#E9967A';
+        }else{
+            this.style.backgroundColor='white'
+        };
+    });
+
+middle_name.addEventListener('input', function() {
+    if(isNotValid(this.value)){
+            this.style.backgroundColor='#E9967A';
+        }else{
+            this.style.backgroundColor='white'
+        };
+    });
+
+
+var phone = document.getElementsByName('phone')[0]
+phone.addEventListener('input', function() {
+    
+    if(isNotValidPhone(this.value)){
+            this.style.backgroundColor='#E9967A';
+        }else{
+            this.style.backgroundColor='white';
+        };
+    });
+
+var email = document.getElementsByName('email')[0]
+email.addEventListener('input', function() {
+    
+    if(isNotValidEmail(this.value)){
+            this.style.backgroundColor='#E9967A';
+        }else{
+            this.style.backgroundColor='white';
+        };
+    });
+
+
+
+</script>
+<!--3. Оформление формы регистрации. (20 баллов)-->
+<style>
+* {
+  box-sizing: border-box;
+  font-family: sans-serif;
+  
+}
+body{
+    background-color:#ebebeb;
+}
+div#feedback {
+  width: 320px;
+  height: 800px;
+  border: 1px solid #CCC;
+  background: url(https://media4.giphy.com/media/BHNfhgU63qrks/giphy.gif) center center no-repeat;
+  background-size: cover;
+  margin: 30px auto;
+  border-radius: 20px;
+}
+div#feedback form {
+  width: 100%;
+  height: 100%;
+  padding: 15px 25px;
+}
+div#feedback form h2 {
+  color: black;
+  text-align: center;
+  font-weight: normal;
+  font-size: 18px;
+  margin-top: 60px;
+  margin-bottom: 80px;
+}
+div#feedback form input {
+  width: 100%;
+  height: 40px;
+  margin-top: 20px;
+  background: rgba(255,255,255,.5);
+  border: 1px solid rgba(255,255,255,.1);
+  padding: 0 15px;
+  color: black;
+  border-radius: 5px;
+  font-size: 14px;
+}
+div#feedback form input:focus {
+  border: 1px solid rgba(255,255,255,.8);
+  outline: none;
+}
+::-webkit-input-placeholder {
+    color: #DDD;
+}
+div#feedback form input.submit {
+  background: rgba(255,255,255,.9);
+  color: #444;
+  font-size: 15px;
+  margin-top: 40px;
+  font-weight: bold;
+}
+div#feedback div form input.date {
+    background: rgba(255,255,255,.9);
+    color: #444;
+    font-size: 15px;
+    margin-top: 40px;
+    font-weight: bold;
+  }
+
+
+/*** Table Styles **/
+
+table#persons_table {
+  background: white;
+  border-radius:3px;
+  border-collapse: collapse;
+  height: 320px;
+  margin: auto;
+  max-width: 600px;
+  padding:5px;
+  width: 100%;
+  box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+  animation: float 5s infinite;
+}
+ 
+th {
+  color:#D5DDE5;;
+  background:#1b1e24;
+  border-bottom:4px solid #9ea7af;
+  border-right: 1px solid #343a45;
+  font-size:23px;
+  font-weight: 100;
+  padding:24px;
+  text-align:left;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);
+  vertical-align:middle;
+}
+
+th:first-child {
+  border-top-left-radius:3px;
+}
+ 
+th:last-child {
+  border-top-right-radius:3px;
+  border-right:none;
+}
+  
+tr {
+  border-top: 1px solid #C1C3D1;
+  border-bottom-: 1px solid #C1C3D1;
+  color:#666B85;
+  font-size:16px;
+  font-weight:normal;
+  text-shadow: 0 1px 1px rgba(256, 256, 256, 0.1);
+}
+ 
+tr:hover td {
+  background:#4E5066;
+  color:#FFFFFF;
+  border-top: 1px solid #22262e;
+}
+ 
+td {
+  background:#FFFFFF;
+  padding:20px;
+  text-align:left;
+  vertical-align:middle;
+  font-weight:300;
+  font-size:18px;
+  text-shadow: -1px -1px 1px rgba(0, 0, 0, 0.1);
+  border-right: 1px solid #C1C3D1;
+}
+
+
+
+div#data_for_send1 div#data_for_send {
+    font: inherit;
+    color: inherit;
+    font-family: "Outfit", sans-serif;
+}
+  
+  
+
+
+  
+
+</style>
+<!--4. После заполнения всех полей и нажатия на кнопку "отправить" формируется страница, содержащая все ответы пользователя.(20 баллов + 20 баллов за оформление)-->
+<script>
+var input_form_send = document.getElementsByName('submit_btn')[0]
+var my_body = document.getElementsByTagName('body')[0]
+// 
+input_form_send.addEventListener('click',function(event) {
+    //проверяем что тербуемые поля заполнены.
+    empty = 0;
+    fields = document.getElementsByName('feedback')[0].elements
+    is_aga = [];
+    for(i=0;i<fields.length;i++){
+        if(fields[i].tagName == 'INPUT' && fields[i].required == true){
+            is_aga.push(fields[i].value.length)
+        }
+    }
+    for(i=0;i<is_aga.length;i++){
+        if(is_aga[i] == 0){
+            empty = 1;
+            break;
+        }
+    }
+    if(empty == 1){
+        return
+    }
+    var is_exists = document.getElementById('data_for_send');
+    var is_exists1 = document.getElementById('data_for_send1');
+
+    if(is_exists){
+        is_exists.remove();
+    }
+
+    if(is_exists1){
+        is_exists1.remove();
+    }
+
+    var div1 = document.createElement('div');
+    
+    var div = document.createElement('div');
+    div.setAttribute('id','data_for_send');
+    div1.setAttribute('id','data_for_send1');
+    text_for_check = ''
+    text_for_check += 'Имя:' + first_name.value,
+    text_for_check += ';Фамилия:' + last_name.value,
+    text_for_check += ";Отчество:" + middle_name.value,
+    text_for_check += ";Телефон:" + phone.value,
+    text_for_check += ";email:" + email.value,
+    text_for_check += ";День рождения:" + birth_date.value,
+
+
+    div1.innerHTML = text_for_check;
+    div.innerHTML='Проверьте Ваши данные. Если всё хорошо нажмите <input type="button" name="submit_ok" value="ок">';
+    var place_in = document.getElementById('popup')
+    place_in.appendChild(div1);
+    place_in.appendChild(div);
+    $( "#popup" ).dialog();
+
+    SaveDBprepare();
+
+});
+
+</script>
+<!--5. Данные из формы сохранить в БД. (20 баллов)-->
+<script>
+    
+    var SaveDBprepare = function(){
+    var input_f_send = document.getElementsByName('submit_ok')[0]
+    input_f_send.addEventListener('click', function() {
+        ShowPerosnInfo();
+        p_first_name = first_name.value
+        p_last_name = last_name.value
+        p_middle_name = middle_name.value
+        p_birth_date = birth_date.value
+        p_is_report = document.getElementsByName('report')[0].value
+        p_report_theme = document.getElementsByName('report_theme')[0].value
+        p_phone = phone.value
+        p_email = email.value
+        var csrftoken = csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+        
+        data = {
+        "first_name": p_first_name,
+        "last_name": p_last_name,
+        "middle_name": p_middle_name,
+        "birth_date": p_birth_date,
+        "is_report": p_is_report,
+        "report_theme": p_report_theme,
+        "phone": p_phone,
+        "email": p_email
+        }
+        data_send = JSON.stringify(data);
+
+        
+        var response = (fetch('http://127.0.0.1:8000/reg_per/save', {
+            'method': 'POST',
+            'headers': {
+            'Content-Type': 'application/json; charset=utf-8',
+            'X-CSRFToken': csrftoken
+            },
+            'body': data_send
+        }));
+
+        ShowPerosnInfo();
+        poup = document.querySelectorAll('[aria-describedby^="popup"]')[0]
+        poup.remove()
+
+    });
+    }
+
+
+</script>
+<!--6. Выведите список зарегистрированных участников в виде таблицы.(20 баллов + 20 баллов за оформление)-->
+<script>
+    var ShowPerosnInfo = function(){
+        var csrftoken = csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+        var xhr = new XMLHttpRequest();
+        xhr.open("POST", 'http://127.0.0.1:8000/reg_per/list', false);
+        xhr.setRequestHeader('Content-Type', 'application/json');
+        xhr.setRequestHeader('X-CSRFToken', csrftoken);
+        xhr.send();
+        var div = document.createElement('div');
+        div.setAttribute('id','persons');
+        response = xhr.responseText
+        response = JSON.parse(response)
+        persons = JSON.parse(response['list'])
+        var place_per = document.getElementById('divpersons')
+        place_per.innerHTML = "";
+        result_str_s = '<table id=persons_table><tbody>';
+        result_str_e = '</tbody></table>';
+        headers = '<tr>';
+        for(x=0;x<1; x++){
+            p = persons[x];
+            for (const [key, value] of Object.entries(p.fields)) {
+                headers += `<th>${key}</th>`
+            }
+        }
+        headers += '</tr>';
+        result_str_s += headers;
+        for(x=0;x<persons.length; x++){
+            p = persons[x]
+            tr_s = '<tr>';
+            tr_e = '</tr>';
+
+            for (const [key, value] of Object.entries(p.fields)) {
+                tr_s += `<td>${value}</td>`
+              }
+            tr_s += tr_e;
+            result_str_s +=tr_s;
+        div.innerHTML = result_str_s
+        place_per.appendChild(div)
+        }
+    }
+
+document.addEventListener("DOMContentLoaded", function(){
+    ShowPerosnInfo();
+});
+</script>
+
+
